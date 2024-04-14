@@ -1,0 +1,23 @@
+%dw 2.0
+
+type auto_2bc7d934_991d_4e15_9b3d_59e5fe07832d_Output_Payload = {
+  Entity: {
+    holds: {
+      dpHldIdNbr: Number, 
+      dpAcctNbr: Number, 
+      dpHldDelInd: String, 
+      dpHldAmt: Number, 
+      dpHldDesc: String, 
+      dpHldTyp: Number, 
+      dpAcctNme: String, 
+      _?: Any
+    }, 
+    _?: Any
+  }, 
+  Metadata: {
+    MsgLst: Array<{      Type: "Validation Error" | "Application Error" | "Informational Message" | "System Error",       Text: String,       Severity: "Error" | "Info",       Code: String,       _?: Any    }>, 
+    _?: Any
+  }, 
+  _?: Any
+}
+

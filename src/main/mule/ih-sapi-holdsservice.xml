@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <http:listener-config name="ih-sapi-holdsservice-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8081" />
+    </http:listener-config>
+    <apikit:config name="ih-sapi-holdsservice-config" api="resource::1ecd1cbe-3b8e-4642-81f5-ea867a67745a:ih-sapi-holdsservice:3.0.0:raml:zip:ih-sapi-holdsservice.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <flow name="ih-sapi-holdsservice-main">
+        <http:listener config-ref="ih-sapi-holdsservice-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="ih-sapi-holdsservice-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Bad request"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="ih-sapi-holdsservice-console">
+        <http:listener config-ref="ih-sapi-holdsservice-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="ih-sapi-holdsservice-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="get:\healthz:ih-sapi-holdsservice-config">
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+"Up"]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\getHolds:application\json:ih-sapi-holdsservice-config">
+		<logger level="INFO" doc:name="Log Flow Start" doc:id="9a3702bb-6862-47d9-b754-afa1d100380c" message='#[flow.name ++ " started."]'/>
+		<logger level="INFO" doc:name="Log Request Body" doc:id="32b5be67-5f6b-40cd-8124-bc02a3736988" message="Request Body : #[payload]"/>
+		<flow-ref doc:name="common flow" doc:id="84522525-de92-4be0-8c42-31e0e1d3c29f" name="common-flow"/>
+		<http:request method="GET" doc:name="Get Holds" doc:id="c43368c8-3784-473a-86e4-86b09ce665c0" config-ref="FIS_HTTP_Request_configuration" path="#[Mule::p('fis.getHolds')]">
+			<http:headers><![CDATA[#[output application/java
+---
+vars.fisHeaders]]]></http:headers>
+			<http:uri-params><![CDATA[#[output application/json
+---
+{
+	"dpAcctNbr" : payload.requestMsg.dpAcctNbr
+}]]]></http:uri-params>
+		</http:request>
+		<logger level="INFO" doc:name="Log Response Body" doc:id="c778f35d-2566-4b29-a430-05d8644b20ff" message="Response Body : #[payload]" />
+		<logger level="INFO" doc:name="Log Flow End" doc:id="74335154-776b-4f80-bc1b-c5415e55fd38" message='#[flow.name ++ " ended."]'/>
+    </flow>
+	<flow name="post:\postHolds:application\json:ih-sapi-holdsservice-config">
+		<logger level="INFO" doc:name="Log Flow Start" doc:id="d8b95dd5-00dd-42fe-bcd2-67344501810a" message='#[flow.name ++ " started."]'/>
+		<logger level="INFO" doc:name="Log Request Body" doc:id="51b6daaa-80f6-49e2-bb59-640470f603ea" message="Request Body : #[payload]"/>
+		<flow-ref doc:name="common flow" doc:id="613062c7-def6-4b55-b9b2-7b937a310463" name="common-flow"/>
+		<http:request method="POST" doc:name="Post Holds" doc:id="a2c8b266-f3b4-4b70-89d9-840cd1f092b5" config-ref="FIS_HTTP_Request_configuration" path="#[Mule::p('fis.postHolds')]">
+			<http:body ><![CDATA[#[{
+    "holds": payload.requestMsg
+}]]]></http:body>
+			<http:headers><![CDATA[#[output application/java
+---
+vars.fisHeaders]]]></http:headers>
+			<http:uri-params><![CDATA[#[output application/json
+---
+{
+	"dpAcctNbr" : payload.requestMsg.dpAcctNbr
+}]]]></http:uri-params>
+		</http:request>
+		<logger level="INFO" doc:name="Log Response Body" doc:id="7022c7e5-c48f-4066-92e2-90c4cd576950" message="Response Body : #[payload]" />
+		<logger level="INFO" doc:name="Log Flow End" doc:id="d8def475-87a8-40aa-957a-e2c8cc450091" message='#[flow.name ++ " ended."]'/>
+    </flow>
+	<flow name="post:\deleteHolds:application\json:ih-sapi-holdsservice-config">
+		<logger level="INFO" doc:name="Log Flow Start" doc:id="1ee22d65-6f7a-4733-a371-44cf7a95afee" message='#[flow.name ++ " started."]'/>
+		<logger level="INFO" doc:name="Log Request Body" doc:id="bdc28fec-c3dc-48ce-96a7-3755f039bbca" message="Request Body : #[payload]"/>
+		<flow-ref doc:name="common flow" doc:id="53e7deb4-0311-4ab3-ba66-382b016ecd00" name="common-flow"/>
+		<http:request method="PUT" doc:name="Delete Holds" doc:id="e989831f-af48-4e1e-a62a-a8ff8c43acc3" config-ref="FIS_HTTP_Request_configuration" path="#[Mule::p('fis.deleteHolds')]">
+			<http:body ><![CDATA[#[{
+    "holds": payload.requestMsg
+}]]]></http:body>
+			<http:headers><![CDATA[#[output application/java
+---
+vars.fisHeaders]]]></http:headers>
+			<http:uri-params><![CDATA[#[output application/json
+---
+{
+	"dpAcctNbr": payload.requestMsg.dpAcctNbr,
+	"dpHldIdNbr": payload.requestMsg.dpHldIdNbr
+}]]]></http:uri-params>
+		</http:request>
+		<logger level="INFO" doc:name="Log Response Body" doc:id="943a5148-9a59-4a0e-9a49-8569cbba1801" message="Response Body : #[payload]" />
+		<logger level="INFO" doc:name="Log Flow End" doc:id="fc84c6e5-9b66-4342-a8ec-5136b603c39a" message='#[flow.name ++ " ended."]'/>
+    </flow>
+	<flow name="common-flow" doc:id="2bc7d934-991d-4e15-9b3d-59e5fe07832d" >
+		<set-variable value="#[uuid()]" doc:name="Set Correlation Id" doc:id="3f309876-7ad7-4439-abbd-15aa9b06833b" variableName="correlationId"/>
+		<flow-ref doc:name="RACF Credentials" doc:id="c488fe7a-d9aa-429e-ad67-71338caf69eb" name="get-racf-credentials-sub-flow" />
+		<flow-ref doc:name="Get FIS Token Sub Flow" doc:id="53ac662d-282c-47c3-a176-ff341109b91a" name="fis-token-sub-flow" />
+		<flow-ref doc:name="Encrypt Headers Data Flow" doc:id="9c3ccf8e-98e4-4601-aaf6-37a82e243ab7" name="fis-encrypt-sub-flow" />
+		<ee:transform doc:name="FIS Headers" doc:id="c0b72db3-8ad6-421d-a93c-fd14d66ce192" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="fisHeaders" ><![CDATA[output application/java
+---
+{
+	"IBS-Authorization" : vars.racfResponse."IBS-Authorization", //vars.encrypted_values."IBS-Authorization",
+	"organization-id" : "BAX-460", // vars.racfResponse."Organization-ID",
+	//"fis-ic-enc-x5ts256" : vars.encrypted_values."fis-ic-enc-x5ts256=",
+	"Authorization" : "Bearer " ++ (vars.access_token default ""),
+	"security-token-type" : Mule::p('fisHeaders.tokenType'),
+	"uuid" : vars.correlationId,
+	"source-id" : Mule::p('fisHeaders.sourceId'),
+	//"fis-ic-enc-sk" : vars.encrypted_values."fis-ic-enc-sk=",
+	"Cookie" : Mule::p('fisHeaders.cookie'),
+	"accept" : Mule::p('fisHeaders.accept'),
+	"application-id" : Mule::p('fisHeaders.applicationId')
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+	</flow>
+</mule>

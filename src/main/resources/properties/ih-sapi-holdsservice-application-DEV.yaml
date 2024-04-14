@@ -1,0 +1,16 @@
+http:
+  port: "8082"
+fis:
+  host: "api-gw-uat.fisglobal.com"
+  port: "443"
+  tokenPath: "/token"
+  getHolds: "/rest/IBSDPHOLD/v4/accounts/{dpAcctNbr}/holds"
+  postHolds: "/rest/IBSDPHOLD/v4/accounts/{dpAcctNbr}/holds"
+  deleteHolds: "/rest/IBSDPHOLD/v4/accounts/{dpAcctNbr}/holds/{dpHldIdNbr}"
+fisHeaders:
+  organizationId: "BA-300"
+  tokenType:  "Oauth2"
+  sourceId: "X3ANY0"
+  cookie: "ak_bmsc=37EC6370CBB8C33C4D52D8728FEA6DD0~000000000000000000000000000000~YAAQEJMauMNcoTaOAQAAHk0uOReHKdXxO5N0HQQpsrAWhzvh7m3kHMOE0olxWc9cKmCqNVIPHMHrswQVvg3MGp48ftyNzrnZW1tsE4V0cRtxPjCd827IynUynQv8XiTwgDOGCuhkakv/daDu4CapJ7UpEkXc2zN9U24TEYOiiaLGBXcZsMlLiwzjGVfNny+Yeh8EwNtMbsbzWiNZCxBRDYja8C1GEZR/qajQc72Rxe3GgoeF6Ka4w0uWWthMbWHgZgIK3Ssq71a/2dESDKa6/84aoiOlxlokWlS2xBBrLch1xRdbLRN6Km3cH5jjkmEw1gt6nCRX9djvpqyTjxZ4a06nkYCZj5cJTi1NWKMZ6MDb5ywPaUmMM4VBwLF8536PZA==; bm_sv=E49F6AA370009D50B6F80A72C93B0B00~YAAQEJMauH/loTaOAQAAfoMzORctJuWAeX47AtAMSEG5NWVNM+zh/51ShtCzK6Pzvir8BllznYsBxW8qI25bc0sTKBac0fZdOmRIZQUdtJDL00oFkx84OANPb7W+g91ds78p8xyR8DY26ZiWqGvzm0YPgfA/vLjOSlVdEv1BjSZ5wZ6/yEIgwa2ituKr3Bt8Az6+4x440Dx78IMkCfkX4QBzhUBolBhEju8v7ervl5CjCV7w4BaYj1+N15UA6wuyKGjp~1; 8BT7945fkc9=14b5a3d95d896372d0320a45fd3cf7b1b3030766c1f44260e034eef40fd0d43ff28beb2f"
+  accept: "application/json"
+  applicationId: "DP"

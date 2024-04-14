@@ -1,0 +1,14 @@
+%dw 2.0
+
+type auto_2bc7d934_991d_4e15_9b3d_59e5fe07832d_Output_Variables_fisHeaders = {|
+  "IBS-Authorization": Any, 
+  "organization-id": String, 
+  Authorization: Any, 
+  "security-token-type": String, 
+  uuid: String, 
+  "source-id": String, 
+  Cookie: String, 
+  accept: String, 
+  "application-id": String
+|}
+
